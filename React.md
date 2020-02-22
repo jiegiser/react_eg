@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:58:13
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-21 19:40:54
+ * @LastEditTime: 2020-02-22 11:20:29
  -->
 1. Fragment 类似 Vue 中的 template 一样的作用：
 
@@ -124,3 +124,95 @@ export default TodoList
         </ul>
 ```
 
+7. class的样式添加：
+
+首先通过import引入样式，然后进行绑定样式，注意这里是className进行绑定，为了防止跟class关键字重名：
+
+```js
+// 引入样式
+import './style.css'
+<div>
+  { /*这是一个注释*/ }
+  <input
+    className = 'input'
+    value = { this.state.inputValue }
+    onChange = { this.handleInputChange.bind(this)
+  }
+/>
+```
+
+8. 与Vue中 v-html指令类似的：dangerouslySetInnerHTML
+
+```js
+  return (
+      <li 
+          key={ index }
+          onClick={ this.handleItemDelete.bind(this, index) }
+          dangerouslySetInnerHTML = { { __html: item } }
+      >
+      </li>
+    )
+```
+
+9. 如果需要点击一个label标签，然后input获取输入焦点，可以这样写：
+htmlFor要对应input的id
+
+```js
+ <div>
+   <label htmlFor="insertArea">输入内容</label>
+   { /*这是一个注释*/ }
+   <input
+     id="insertArea"
+     className = 'input'
+     value = { this.state.inputValue }
+     onChange = { this.handleInputChange.bind(this)
+   }
+   />
+   <button onClick = { this.handleBtnClick.bind(this) }>提交</button>
+ </div>
+```
+
+10. 组件之间的传值
+
+父组件向子组件传值，跟vue类似，也是通过属性进行传值：
+```js
+// 父组件
+  return (
+    <div>
+      <TodoItem content = { item }/>
+      {
+        /*
+        <li 
+          key={ index }
+          onClick={ this.handleItemDelete.bind(this, index) }
+          dangerouslySetInnerHTML = { { __html: item } }
+        >
+        </li>
+       */
+       }
+    </div>
+  )
+// 子组件接收通过this.props
+  render() {
+    return (
+    <div>{ this.props.content }</div>
+    )
+  }
+```
+
+子组件向父组件传值: 跟Vue还是有很大的区别，方法也是通过属性的形势进行传递：
+```js
+// 父组件
+  <TodoItem
+    content = { item }
+    index = { index }
+    deleteItem = { this.handleItemDelete.bind(this) }
+  />
+// 子组件
+  handleClick() {
+    // 直接通过下面的方式进行调用父组件的方法，
+    // 注意这里其实就是调用this.handleItemDelete，
+    // 需要在父组件进行绑定this，在父组件传值的时候需要记得绑定this
+    this.props.deleteItem(this.props.index)
+  }
+```
