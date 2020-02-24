@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:44:41
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-22 11:35:36
+ * @LastEditTime: 2020-02-22 14:52:58
  */
 import React, { Component, Fragment } from 'react'
 
@@ -49,35 +49,46 @@ class TodoList extends Component {
   getTodoItem() {
     return this.state.list.map((item, index) => {
       return (
-        <div>
-          <TodoItem
-            content = { item }
-            index = { index }
-            deleteItem = { this.handleItemDelete }
-          />
-        </div>
+        <TodoItem
+          key = { index }
+          content = { item }
+          index = { index }
+          deleteItem = { this.handleItemDelete }
+        />
       )
     })
   }
   handleInputChange(e) {
     console.log(e.target.value)
-    this.setState({
-      inputValue: e.target.value
+    // this.setState({
+    //   inputValue: e.target.value
+    // })
+    // 写成函数的形式是异步返回的
+    const inputValue = e.target.value
+    this.setState(() => {
+      return {
+        inputValue
+      }
     })
   }
   handleBtnClick() {
-    this.setState({
-      list: [...this.state.list, this.state.inputValue],
-      inputValue: ''
+    // prevState 是修改之前的数据，也就是this.state
+    this.setState((prevState) => {
+      return {
+        list: [...prevState.list, prevState.inputValue],
+        inputValue: ''
+      }
     })
   }
   handleItemDelete(index) {
     // immutable
     // state 不许与我们做任何改变
-    const list = [...this.state.list]
-    list.splice(index, 1)
-    this.setState({
-      list
+    this.setState((prevState) => {
+      const list  = [...prevState.list]
+      list.splice(index, 1)
+      return {
+        list
+      }
     })
   }
 }
