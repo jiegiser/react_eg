@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-22 10:37:57
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-28 08:30:08
+ * @LastEditTime: 2020-02-28 16:11:44
  */
 import React, { Component } from 'react'
 // 传值类型校验
@@ -18,6 +18,9 @@ class TodoItem extends Component {
     return (
       <div onClick={ this.handleClick }>{ content }</div>
     )
+  }
+  componentWillReceiveProps() {
+    console.log('componentWillReceiveProps')
   }
   handleClick() {
     const { deleteItem, index } = this.props
