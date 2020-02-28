@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:58:13
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-22 15:15:17
+ * @LastEditTime: 2020-02-28 10:20:10
  -->
 1. Fragment 类似 Vue 中的 template 一样的作用：
 
@@ -209,6 +209,28 @@ htmlFor要对应input的id
     )
   }
 ```
+子组件接收父组件传入的值进行校验，跟Vue还是存在很大的区别：
+在子组件中首先需要引入prop-types包，
+```js
+// 传值类型校验
+import PropTypes from 'prop-types'
+// 类型
+TodoItem.propTypes = {
+  // content 是一个string类型的
+  content: PropTypes.string,
+  deleteItem: PropTypes.func,
+  index: PropTypes.number,
+  // 表示该值必须要传并为string类型
+  test: PropTypes.string.isRequired,
+  // test 有可能是number，有可能是string类型
+  test: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+}
+// 默认属性
+TodoItem.defaultProps = {
+  // 设置content默认为空字符串
+  content: ''
+}
+```
 
 子组件向父组件传值: 跟Vue还是有很大的区别，方法也是通过属性的形势进行传递：
 ```js
@@ -226,6 +248,7 @@ htmlFor要对应input的id
     this.props.deleteItem(this.props.index)
   }
 ```
+
 
 11. react 框架的特点
 - 声明式的开发
@@ -250,5 +273,50 @@ react使用redux等进行管理数据
 
   维护比较容易，前端自动化测试的时候比较容易；只需要给函数输入值查看结果是否是正确的。
 
+12. 虚拟DOM
 
+- state 数据
+- JSX模板
+- 数据 + 模板结合，生成真实的DOM，来显示
+- state 发生改变
+- 数据 + 模板，生成真实的DOM，替换原始的DOM
 
+缺陷：
+第一次生成了一个完整的DOM片段
+第二次生成了一个完整的DOM片段
+第二次生成的DOM完全替换第一次生成的DOM；非常消耗性能。
+
+改良：
+- state 数据
+- JSX模板
+- 数据 + 模板结合，生成真实的DOM，来显示
+- state 发生改变
+- 数据 + 模板，生成真实的DOM，并不直接替换原始的DOM
+- 新的 DOM （DocumentFragment）和原始的 DOM 做比对，找差异。
+- 找出 input 框发生了的变化
+- 只用新的DOM中的input元素，替换掉老的DOM中的input元素
+
+缺陷：
+性能的提升并不明显
+
+- state 数据
+- JSX模板
+- 数据 + 模板结合，生成真实的DOM，来显示
+
+```html
+  <div id='abc'><span>hello world</span></div>
+```
+- 生成虚拟 DOM （虚拟DOM就是一个JS对象，用它来描述真实DOM）
+
+```js  
+  ['div', { id: 'abc }, ['span', {}, 'hello world']]
+```
+
+- state 发生改变
+- 数据 + 模板，生成新的虚拟 DOM，
+
+```js  
+  ['div', { id: 'abc }, ['span', {}, 'bye']]
+```
+- 比较原始虚拟DOM和新的虚拟DOM的区别，找到区别是span中内容
+- 直接操作DOM，改变span中的内容

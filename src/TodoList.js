@@ -3,12 +3,13 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:44:41
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-22 14:52:58
+ * @LastEditTime: 2020-02-28 08:52:41
  */
 import React, { Component, Fragment } from 'react'
 
 // 引入子组件
 import TodoItem from './TodoItem'
+import Test from './Test'
 // 引入样式
 import './style.css'
 
@@ -18,6 +19,7 @@ class TodoList extends Component {
     super(props)
     // react中定义数据要放在状态之中
     // 组件的状态
+    // 当组件的state或者props发生改变的时候，render函数就会重新执行
     this.state = {
       inputValue: '',
       list: []
@@ -43,6 +45,7 @@ class TodoList extends Component {
         <ul>
           { this.getTodoItem() }
         </ul>
+        <Test content = { this.state.inputValue }></Test>
       </Fragment>
     )
   }
