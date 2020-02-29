@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:58:13
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-28 16:34:28
+ * @LastEditTime: 2020-02-29 09:43:59
  -->
 ## Fragment 类似 Vue 中的 template 一样的作用
 
@@ -421,8 +421,9 @@ componentWillUnmount
     console.log('componentWillMount')
   }
   // 组件被挂在到页面之后，自动被执行 --Vue的mounted函数
-  componentDidCatch() {
-    console.log('componentDidCatch')
+  // 一般ajax请求放在这里
+  componentDidMount() {
+    console.log('componentDidMount')
   }
   // 组件被更新之前，他会自动被执行，
   shouldComponentUpdate() {
@@ -453,3 +454,16 @@ componentWillUnmount
 ```
 生命周期函数的使用场景：
 
+提升性能：
+比如我们做的todolist，当input输入框中输入的数据没有添加到数组中，也就是要
+传递给子组件中，就不让他生成虚拟dom进行渲染（如果不进行控制，每次在input输入值的时候，会执行子组件的render重新渲染）
+可以进行判断传值的变化，进行减少性能消耗。
+```js
+  // 组件是否更新，如果传进来的值跟之前的一样，就不进行更新，
+  shouldComponentUpdate(nextProps, nextState) {
+    if(nextProps.content !== this.props.content) {
+      return true
+    }
+    return false
+  }
+```

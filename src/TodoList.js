@@ -3,13 +3,14 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:44:41
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-28 16:24:57
+ * @LastEditTime: 2020-02-29 09:46:23
  */
 import React, { Component, Fragment } from 'react'
 
 // 引入子组件
 import TodoItem from './TodoItem'
 // import Test from './Test'
+import axios from 'axios'
 // 引入样式
 import './style.css'
 
@@ -61,8 +62,14 @@ class TodoList extends Component {
     // )
   }
   // 组件被挂在到页面之后，自动被执行 --Vue的mounted函数
-  componentDidCatch() {
-    console.log('componentDidCatch')
+  componentDidMount() {
+    console.log('componentDidMount')
+    axios.get('/api/get').then(result => {
+      console.log('success')
+    })
+    .catch(e => {
+      console.log(e)
+    })
   }
   // 组件被更新之前，他会自动被执行，
   shouldComponentUpdate() {
@@ -108,9 +115,9 @@ class TodoList extends Component {
     //   inputValue: e.target.value
     // })
     // 写成函数的形式是异步返回的
-    // const inputValue = e.target.value
+    const inputValue = e.target.value
     // this.input指向的是实际的input的DOM元素
-    const inputValue = this.input.value
+    // const inputValue = this.input.value
     this.setState(() => {
       return {
         inputValue

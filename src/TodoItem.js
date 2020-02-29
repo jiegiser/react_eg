@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-22 10:37:57
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-28 16:11:44
+ * @LastEditTime: 2020-02-28 16:59:28
  */
 import React, { Component } from 'react'
 // 传值类型校验
@@ -18,6 +18,13 @@ class TodoItem extends Component {
     return (
       <div onClick={ this.handleClick }>{ content }</div>
     )
+  }
+  // 组件是否更新，如果传进来的值跟之前的一样，就不进行更新，
+  shouldComponentUpdate(nextProps, nextState) {
+    if(nextProps.content !== this.props.content) {
+      return true
+    }
+    return false
   }
   componentWillReceiveProps() {
     console.log('componentWillReceiveProps')
