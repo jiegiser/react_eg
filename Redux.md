@@ -3,9 +3,14 @@
  * @Author: jiegiser
  * @Date: 2020-02-29 14:49:45
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 16:38:42
+ * @LastEditTime: 2020-02-29 17:27:31
  -->
  Redux 就相当于Vue的Vuex数据层框架；原理基本也差不多。Redux = Reducer + Flux
+
+具有以下原则：
+- store 是唯一的
+- 只有 store 能够改变自己的内容（在reducer中只是返回了新的store数据）
+- reducer 必须是纯函数（给定固定的输入，就一定会有固定的输出，而且不会有任何副作用）
 
 代码如下：
 ```js
@@ -116,3 +121,111 @@ export default AntaTodoList
 
 流程是首先我们使用store中存储的数据，通过store.getState()获取到数据，然后input监听数据数据一旦变化，就修改store中的数据:store.dispatch(action),
 然后在reducer中，进行判断操作类型type，进行修改对应的数据（数据通过深拷贝一份进行修改）；然后在组件中监听store数据的变化，一旦变化重新通过store.getState()获取到数据进行更新组件中store中的数据，进行渲染。
+
+上面的项目可以这样拆分：
+```js
+// 组件
+import React, { Component } from 'react'
+import 'antd/dist/antd.css'
+import { Input, Button, List } from 'antd'
+// 引入store数据仓库
+import store from './store/index'
+import { getInputChangeAction, getAddItemAction, getDeleteItemAction } from './store/actionCreators'
+class AntaTodoList extends Component {
+  constructor(props) {
+    super(props)
+    // store.getState获取store数据
+    this.state = store.getState()
+    this.handleInputChange = this.handleInputChange.bind(this)
+    this.handleStoreChange = this.handleStoreChange.bind(this)
+    this.handleBtnClick = this.handleBtnClick.bind(this)
+    // 订阅store中的内容，store中的数据只要发生改变，里面的回调函数就会执行
+    store.subscribe(this.handleStoreChange)
+  }
+  render() {
+    return (
+      <div style = {{ marginTop: '10px', marginLeft: '10px' }}>
+        <div>
+          <Input
+            value = { this.state.inputValue }
+            placeholder="Basic usage"
+            style = {{ width: '300px', marginRight: '10px'}}
+            onChange = { this.handleInputChange }
+          />
+          <Button type="primary" onClick = { this.handleBtnClick }>提交</Button>
+        </div>
+        <List
+          style = {{ marginTop: '10px', width: '300px' }}
+          bordered
+          dataSource = { this.state.list }
+          renderItem = { (item, index) => (
+            <List.Item onClick = { this.handleItemDelete.bind(this, index) }>
+              { item }
+            </List.Item>
+          )}
+        />
+      </div>
+    )
+  }
+  handleInputChange(e) {
+    // 修改store中的inputValue
+    const action = getInputChangeAction(e.target.value)
+    // 将action传递给store，通过reducers处理数据，然后返回数据
+    store.dispatch(action)
+  }
+  handleStoreChange() {
+    console.log('change')
+    // 当知道store中的数据变化的时候直接替换组件中state中的数据
+    this.setState(store.getState())
+  }
+  handleBtnClick() {
+    const action = getAddItemAction()
+    store.dispatch(action)
+  }
+  handleItemDelete(index) {
+    const action = getDeleteItemAction(index)
+    store.dispatch(action)
+  }
+}
+export default AntaTodoList
+
+// './store/index'
+import { createStore } from 'redux'
+import reducer from './reducer'
+
+// 创建一个数据公共存储仓库；reducer真正的数据存储
+const store = createStore(
+  reducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
+
+export default store
+
+// './store/actionCreators'
+import { CHANGE_INPUT_VALUE, ADD_TODO_ITEM, DELETE_TODO_ITEM } from './actionTypes'
+export const getInputChangeAction = value => {
+  return {
+    type: CHANGE_INPUT_VALUE,
+    value
+  }
+}
+
+export const getAddItemAction = () => {
+  return {
+    type: ADD_TODO_ITEM
+  }
+}
+
+export const getDeleteItemAction = index => {
+  return {
+    type: DELETE_TODO_ITEM,
+    index
+  } 
+}
+
+// './actionTypes'
+
+export const CHANGE_INPUT_VALUE = 'change_input_value'
+export const ADD_TODO_ITEM = 'add_todo_item'
+export const DELETE_TODO_ITEM = 'delete_todo_item'
+```
