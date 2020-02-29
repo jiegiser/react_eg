@@ -1,3 +1,70 @@
 .input {
   border: 1px solid red;
 }
+/* .show {
+  opacity: 1;
+  transition: all 1s ease-in;
+}
+
+.hide {
+  opacity: 0;
+  transition: all 1s ease-in;
+} */
+.show {
+  animation: show-item 2s forwards;
+}
+
+/* 定义 hide-item的动画，持续两秒，ease-in动画曲线，forwards就是最终保留动画的最后效果，不要去除*/
+.hide {
+  animation: hide-item 2s forwards;
+}
+
+@keyframes show-item {
+  0% {
+    opacity: 0;
+    color: red;
+  }
+  50% {
+    opacity: 0.5;
+    color: green;
+  }
+  100% {
+    opacity: 1;
+    color: blue;
+  }
+}
+@keyframes hide-item {
+  0% {
+    opacity: 1;
+    color: red;
+  }
+  50% {
+    opacity: 0.5;
+    color: green;
+  }
+  100% {
+    opacity: 0;
+    color: blue;
+  }
+}
+
+.fade-enter, .fade-appear {
+  opacity: 0;
+}
+.fade-enter-active, .fade-appear-active  {
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+.fade-enter-done {
+  opacity: 1;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 1s ease-in;
+}
+.fade-exit-done {
+  opacity: 0;
+}

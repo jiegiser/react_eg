@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:44:41
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 09:46:23
+ * @LastEditTime: 2020-02-29 10:23:52
  */
 import React, { Component, Fragment } from 'react'
 
@@ -64,8 +64,13 @@ class TodoList extends Component {
   // 组件被挂在到页面之后，自动被执行 --Vue的mounted函数
   componentDidMount() {
     console.log('componentDidMount')
-    axios.get('/api/get').then(result => {
-      console.log('success')
+    axios.get('api/todolist').then(res => {
+      console.log(res.data)
+      this.setState(() => {
+        return {
+          list: [...res.data]
+        }
+      })
     })
     .catch(e => {
       console.log(e)

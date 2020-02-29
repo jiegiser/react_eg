@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:58:13
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 09:43:59
+ * @LastEditTime: 2020-02-29 11:51:41
  -->
 ## Fragment 类似 Vue 中的 template 一样的作用
 
@@ -466,4 +466,191 @@ componentWillUnmount
     }
     return false
   }
+```
+
+## React中动画
+
+使用css动画效果：
+```css
+.show {
+  opacity: 1;
+  transition: all 1s ease-in;
+}
+
+.hide {
+  opacity: 0;
+  transition: all 1s ease-in;
+}
+```
+或者定义动画：
+
+```css
+.show {
+  animation: show-item 2s forwards;
+}
+
+/* 定义 hide-item的动画，持续两秒，ease-in动画曲线，forwards就是最终保留动画的最后效果，不要去除*/
+.hide {
+  animation: hide-item 2s forwards;
+}
+
+@keyframes show-item {
+  0% {
+    opacity: 0;
+    color: red;
+  }
+  50% {
+    opacity: 0.5;
+    color: green;
+  }
+  100% {
+    opacity: 1;
+    color: blue;
+  }
+}
+@keyframes hide-item {
+  0% {
+    opacity: 1;
+    color: red;
+  }
+  50% {
+    opacity: 0.5;
+    color: green;
+  }
+  100% {
+    opacity: 0;
+    color: blue;
+  }
+}
+```
+
+使用 react-transition-group 实现动画
+
+> https://github.com/reactjs/react-transition-group
+  https://reactcommunity.org/react-transition-group/
+
+使用这个库就跟Vue的动画组件一样，有几个类进行控制动画：
+```css
+.fade-enter, .fade-appear {
+  opacity: 0;
+}
+.fade-enter-active, .fade-appear-active  {
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+.fade-enter-done {
+  opacity: 1;
+}
+.fade-exit {
+  opacity: 1;
+}
+.fade-exit-active {
+  opacity: 0;
+  transition: opacity 1s ease-in;
+}
+.fade-exit-done {
+  opacity: 0;
+}
+```
+在元素标签上，需要进行设置：其中onEntered是当动画执行完成之后执行的钩子函数，我们也可以
+在fade-enter-done的类中添加color属性，跟onEntered里面设置是一样的
+```html
+        <CSSTransition
+          // 根据什么属性进行变化
+          in = { this.state.show }
+          timeout = { 1000 }
+          classNames = 'fade'
+          // unmountOnExit 不显示的时候之间移除dom
+          unmountOnExit
+          onEntered = { (el) => {
+            el.style.color = 'blue'
+          }}
+          // 页面在第一次渲染的时候执行动画,会给元素增加fade-appear以及fade-appear-active两个类
+          appear = { true }
+        >
+          <div>hello</div>
+        </CSSTransition>
+```
+
+使用 react-transition-group 实现多个元素的动画
+
+首先需要引入TransitionGroup：跟单个不同的是，需要在每一个循环的元素外层包裹一个CSSTransition。
+```js
+import React, { Component, Fragment } from 'react'
+import './style.css'
+// 动画组件
+import {
+  CSSTransition,
+  TransitionGroup,
+} from 'react-transition-group'
+class App extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      show: true,
+      list: []
+    }
+    this.handleToggle = this.handleToggle.bind(this)
+    this.handleAddItem = this.handleAddItem.bind(this)
+  }
+  render() {
+    return (
+      // <Fragment>
+      //   <CSSTransition
+      //     in = { this.state.show }
+      //     timeout = { 1000 }
+      //     classNames = 'fade'
+      //     // unmountOnExit 不显示的时候之间移除dom
+      //     unmountOnExit
+      //     onEntered = { (el) => {
+      //       el.style.color = 'blue'
+      //     }}
+      //     appear = { true }
+      //   >
+      //     <div>hello</div>
+      //   </CSSTransition>
+      //   <button onClick = { this.handleToggle }>toggle</button>
+      // </Fragment>
+      <Fragment>
+        <TransitionGroup>
+          {
+            this.state.list.map((item, index) => {
+              return (
+                <CSSTransition
+                  key={ index }
+                  timeout = { 1000 }
+                  classNames = 'fade'
+                  // unmountOnExit 不显示的时候之间移除dom
+                  unmountOnExit
+                  onEntered = { (el) => {
+                    el.style.color = 'blue'
+                  }}
+                  appear = { true }
+                >
+                  <div>{ item }</div>
+                </CSSTransition>
+              )
+            })
+          }
+        </TransitionGroup>
+        <button onClick = { this.handleAddItem }>toggle</button>
+      </Fragment>
+    )
+  }
+  handleToggle() {
+    this.setState(() => {
+      return {
+        show: this.state.show ? false : true
+      }
+    })
+  }
+  handleAddItem() {
+    this.setState((prevState) => {
+      return {
+        list: [...prevState.list, 'item']
+      }
+    })
+  }
+}
+export default App
 ```
