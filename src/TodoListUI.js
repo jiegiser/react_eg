@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-03-01 09:01:43
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-03-01 09:39:45
+ * @LastEditTime: 2020-03-01 10:51:01
  */
 
  import React from 'react'
@@ -32,7 +32,7 @@ const TodoListUI = props => {
       dataSource = { props.list }
       renderItem = { (item, index) => (
         <List.Item
-          onClick = { (index) => {
+          onClick = { () => {
             props.handleItemDelete(index)
           } }
         >

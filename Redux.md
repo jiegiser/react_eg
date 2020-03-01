@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-29 14:49:45
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 17:27:31
+ * @LastEditTime: 2020-03-01 11:08:04
  -->
  Redux 就相当于Vue的Vuex数据层框架；原理基本也差不多。Redux = Reducer + Flux
 
@@ -228,4 +228,88 @@ export const getDeleteItemAction = index => {
 export const CHANGE_INPUT_VALUE = 'change_input_value'
 export const ADD_TODO_ITEM = 'add_todo_item'
 export const DELETE_TODO_ITEM = 'delete_todo_item'
+```
+
+## Redux-thunk 中间件使用发送请求
+
+首先安装yarn add redux-thunk，使用：
+```js
+import { createStore, applyMiddleware } from 'redux'
+import reducer from './reducer'
+import thunk from 'redux-thunk'
+
+// 创建一个数据公共存储仓库；reducer真正的数据存储
+const store = createStore(
+  reducer,
+  applyMiddleware(thunk)
+)
+
+export default store
+```
+如果有多个中间件使用，比如之前使用的redux devtools跟thunk中间件需要一起使用：
+这是redux devtools的一个解决方法
+```js
+import { createStore, applyMiddleware, compose } from 'redux'
+import reducer from './reducer'
+// https://github.com/reduxjs/redux-thunk
+import thunk from 'redux-thunk'
+// https://github.com/zalmoxisus/redux-devtools-extension
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
+
+const enhancer = composeEnhancers(
+  applyMiddleware(...[thunk]),
+);
+// 创建一个数据公共存储仓库；reducer真正的数据存储
+const store = createStore(
+  reducer,
+  enhancer
+)
+
+export default store
+```
+
+使用redux-thunk，action不仅仅是一个对象，就像前面写的只返回type跟value的对象，可以
+返回一个函数；然后我们调用store.dispatch(action)直接会执行这个返回的函数，然后在返回的函数里面我们去分发action，当action为返回
+一个函数的时候，他会有一个参数dispatch分发，就相当于store.dispatch，我们就可以在返回的函数里面去分发action。
+下面代码是使用thunk：
+```js
+// 在组件中使用
+  // import axios from 'axios'
+  import {
+    getTodoList 
+  } from './store/actionCreators'
+  componentDidMount() {
+    // 如果发现action为一个函数，store.dispatch就会去执行一下这个函数，
+    // 在这个函数里面我们去执行store.dispatch去分发请求，修改数据
+    const action = getTodoList()
+    store.dispatch(action) // 这里action返回的是一个函数
+
+    // 如果不使用redux-thunk。我们需要在组件的声明周期里面去执行发送异步请求，
+    // 如果有很多方法都需要在组件的生命周期里面去执行，这样会导致一个组件会很杂乱，不好维护。
+    axios.get('/todolist.json').then(res => {
+      console.log(res)
+      const data = res.data
+      const action = initListAction(data)
+      store.dispatch(action)
+    }).catch(e => {
+      console.log(e)
+    })
+  }
+
+  // './store/actionCreators'
+// 获取异步请求的数据
+// 返回一个函数
+export const getTodoList = () => {
+  // 当action返回为一个函数的时候，会接收到一个dispatch方法
+  return (dispatch) => {
+    axios.get('/todolist.json').then(res => {
+      console.log(res)
+      const data = res.data
+      const action = initListAction(data)
+      dispatch(action)
+    }).catch(e => {
+      console.log(e)
+    })
+  }
+}
 ```

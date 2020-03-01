@@ -3,14 +3,20 @@
  * @Author: jiegiser
  * @Date: 2020-02-29 15:06:57
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 17:15:00
+ * @LastEditTime: 2020-03-01 10:47:48
  */
 import React, { Component } from 'react'
 import 'antd/dist/antd.css'
 // 引入store数据仓库
 import store from './store/index'
 import TodoListUI from './TodoListUI'
-import { getInputChangeAction, getAddItemAction, getDeleteItemAction } from './store/actionCreators'
+// import axios from 'axios'
+import {
+  getInputChangeAction,
+  getAddItemAction,
+  getDeleteItemAction,
+  getTodoList 
+} from './store/actionCreators'
 class AntaTodoList extends Component {
   constructor(props) {
     super(props)
@@ -33,6 +39,26 @@ class AntaTodoList extends Component {
         handleItemDelete = { this.handleItemDelete }
       />
     )
+  }
+  componentDidMount() {
+    // 如果发现action为一个函数，store.dispatch就会去执行一下这个函数，
+    // 在这个函数里面我们去执行store.dispatch去分发请求，修改数据
+    const action = getTodoList()
+    store.dispatch(action)
+    
+    // setTimeout(() => {
+    //   const data = ["jiegiser", "jie", "React"]
+    //   const action = initListAction(data)
+    //   store.dispatch(action)
+    // }, 2000)
+    // axios.get('/todolist.json').then(res => {
+    //   console.log(res)
+    //   const data = res.data
+    //   const action = initListAction(data)
+    //   store.dispatch(action)
+    // }).catch(e => {
+    //   console.log(e)
+    // })
   }
   handleInputChange(e) {
     // 修改store中的inputValue

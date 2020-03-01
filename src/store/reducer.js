@@ -3,9 +3,9 @@
  * @Author: jiegiser
  * @Date: 2020-02-29 15:34:02
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 16:57:42
+ * @LastEditTime: 2020-03-01 10:08:16
  */
-import { CHANGE_INPUT_VALUE, ADD_TODO_ITEM, DELETE_TODO_ITEM } from './actionTypes'
+import { CHANGE_INPUT_VALUE, ADD_TODO_ITEM, DELETE_TODO_ITEM, INIT_LIST_ACTION } from './actionTypes'
 // 拿到之前的数据已经需要操作的数据的信息，进行处理数据，并返回给store
  const defaultState = {
    inputValue: '',
@@ -30,6 +30,11 @@ export default (state = defaultState, action) => {
   if (action.type === DELETE_TODO_ITEM) {
     const newState = JSON.parse(JSON.stringify(state))
     newState.list.splice(action.index, 1)
+    return newState
+  }
+  if (action.type === INIT_LIST_ACTION) {
+    const newState = JSON.parse(JSON.stringify(state))
+    newState.list = action.data
     return newState
   }
   return state
