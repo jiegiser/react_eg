@@ -3,9 +3,9 @@
  * @Author: jiegiser
  * @Date: 2020-02-29 17:03:35
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-03-01 10:43:08
+ * @LastEditTime: 2020-03-01 14:14:35
  */
-import { CHANGE_INPUT_VALUE, ADD_TODO_ITEM, DELETE_TODO_ITEM, INIT_LIST_ACTION } from './actionTypes'
+import { CHANGE_INPUT_VALUE, ADD_TODO_ITEM, DELETE_TODO_ITEM, INIT_LIST_ACTION, GET_INIT_LIST } from './actionTypes'
 // import axios from 'axios'
 export const getInputChangeAction = value => {
   return {
@@ -34,7 +34,7 @@ export const initListAction = data => {
   }
 }
 
-// 获取异步请求的数据
+// 获取异步请求的数据 redux-thunk
 // 返回一个函数
 export const getTodoList = () => {
   // 当action返回为一个函数的时候，会接收到一个dispatch方法
@@ -52,5 +52,12 @@ export const getTodoList = () => {
     // }).catch(e => {
     //   console.log(e)
     // })
+  }
+}
+
+// redux-saga
+export const getInitList = () => {
+  return {
+    type: GET_INIT_LIST
   }
 }

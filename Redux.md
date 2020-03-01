@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-29 14:49:45
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-03-01 11:08:04
+ * @LastEditTime: 2020-03-01 14:47:04
  -->
  Redux 就相当于Vue的Vuex数据层框架；原理基本也差不多。Redux = Reducer + Flux
 
@@ -312,4 +312,66 @@ export const getTodoList = () => {
     })
   }
 }
+```
+
+## Redux 中间件
+
+Redux 中间件就是action与store之间的过程，我们通过函数处理了dispatch方法，再次封装。
+
+## redux-saga 中间件的使用
+
+https://github.com/redux-saga/redux-saga
+首先进行安装:yarn add redux-saga,使用跟redux-thunk差不多，只不多他做了很多处理：
+```js
+// 组件中
+import {
+  getInitList
+} from './store/actionCreators'
+  componentDidMount() {
+    const action = getInitList()
+    store.dispatch(action)
+  }
+// './store/actionCreators'
+export const getInitList = () => {
+  return {
+    type: GET_INIT_LIST
+  }
+}
+// 在store的配置：
+// 使用redux-saga
+import { createStore, compose, applyMiddleware } from 'redux'
+import reducer from './reducer'
+import createSagaMiddleware from 'redux-saga'
+import todoSagas from './saga'
+// https://github.com/zalmoxisus/redux-devtools-extension
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose
+const sagaMiddleware = createSagaMiddleware()
+const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware))
+// 创建一个数据公共存储仓库；reducer真正的数据存储
+const store = createStore(
+  reducer,
+  enhancer
+)
+sagaMiddleware.run(todoSagas)
+export default store
+// './saga'
+import { takeEvery, put } from 'redux-saga/effects'
+import { GET_INIT_LIST } from './actionTypes'
+// import axios from 'axios'
+import { initListAction } from './actionCreators'
+function* getInitList() {
+  try {
+    const res = yield axios.get('/todolist.json')
+    const action = initListAction(res.data)
+    yield put(action)
+  } catch(e) {
+    console.log('网络请求失败', e)
+  }
+}
+function* mySaga() {
+  // 只要捕捉到GET_INIT_LIST类型，就会之后后面的getInitList方法
+  yield takeEvery(GET_INIT_LIST, getInitList)
+}
+  
+export default mySaga
 ```
