@@ -3,7 +3,7 @@
  * @Author: jiegiser
  * @Date: 2020-02-21 15:58:13
  * @LastEditors: jiegiser
- * @LastEditTime: 2020-02-29 11:51:41
+ * @LastEditTime: 2020-03-01 09:41:08
  -->
 ## Fragment 类似 Vue 中的 template 一样的作用
 
@@ -654,3 +654,115 @@ class App extends Component {
 }
 export default App
 ```
+
+## 子组件调用父组件的方法并传递参数
+
+上面只是写了父组件可以像其他数据一样传递函数给子组件，但是没有像父组件的方法中传递
+参数，如果我们这样写：this.props.handleItemDelete(index) 直接传入index是不行的；
+```js
+// 错误的写法
+        <List
+          renderItem = { (item, index) => (
+            <List.Item
+              onClick = { this.props.handleItemDelete(index) }
+            >
+              { item }
+            </List.Item>
+          )}
+        />
+// 正确的写法
+        <List
+          renderItem = { (item, index) => (
+            <List.Item
+              onClick = { (index) => {
+                this.props.handleItemDelete(index)
+              } }
+            >
+              { item }
+            </List.Item>
+          )}
+        />
+```
+
+## 无状态组件
+
+当一个组件只有render函数的时候，我们可以使用无状态组件来替换，例如：
+```js
+ import React, { Component } from 'react'
+ import { Input, Button, List } from 'antd'
+ class TodoListUI extends Component {
+   render() {
+     return (
+      <div style = {{ marginTop: '10px', marginLeft: '10px' }}>
+        <div>
+          <Input
+            value = { this.props.inputValue }
+            placeholder="Basic usage"
+            style = {{ width: '300px', marginRight: '10px'}}
+            onChange = { this.props.handleInputChange }
+          />
+          <Button
+            type="primary"
+            onClick = { this.props.handleBtnClick }
+          >提交</Button>
+        </div>
+        <List
+          style = {{ marginTop: '10px', width: '300px' }}
+          bordered
+          dataSource = { this.props.list }
+          renderItem = { (item, index) => (
+            <List.Item
+              onClick = { (index) => {
+                this.props.handleItemDelete(index)
+              } }
+            >
+              { item }
+            </List.Item>
+          )}
+        />
+      </div>
+     )
+   }
+ }
+ export default TodoListUI
+```
+我们可以用无状态组件来写：
+```js
+ import React from 'react'
+ import { Input, Button, List } from 'antd'
+//  无状态组件
+const TodoListUI = props => {
+  return (
+    <div style = {{ marginTop: '10px', marginLeft: '10px' }}>
+    <div>
+      <Input
+        value = { props.inputValue }
+        placeholder="Basic usage"
+        style = {{ width: '300px', marginRight: '10px'}}
+        onChange = { props.handleInputChange }
+      />
+      <Button
+        type="primary"
+        onClick = { props.handleBtnClick }
+      >提交</Button>
+    </div>
+    <List
+      style = {{ marginTop: '10px', width: '300px' }}
+      bordered
+      dataSource = { props.list }
+      renderItem = { (item, index) => (
+        <List.Item
+          onClick = { (index) => {
+            props.handleItemDelete(index)
+          } }
+        >
+          { item }
+        </List.Item>
+      )}
+    />
+  </div>   
+  )
+}
+```
+无状态组件的性能比较高；因为他就是一个函数，只有render的组件是一个类，有声明周期函数等，
+使用无状态组件来提高性能。
